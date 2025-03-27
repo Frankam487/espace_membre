@@ -1,51 +1,81 @@
+<?php
+require_once './db.php';
+
+function handlePostRequest($pdo)
+{
+  //verification du type de requete
+  if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    return;
+  }
+  
+  $mailconnect = htmlspecialchars($_POST['mailconnect']);
+  $mdpconnect = $_POST['mdpconnect'];
+  if (empty($mailconnect) || empty($mdpconnect)) {
+    return "tous les champs doivent etre remplir";
+  }
+
+  return authenticateUser($pdo, $mailconnect, $mdpconnect);
+}
+function authenticateUser($pdo, $mailconnect, $mdpconnect)
+{
+  
+
+  $sql = "SELECT * FROM membre WHERE mail = :mailconnect";
+  $reqMail = $pdo->prepare($sql);
+  $reqMail->execute(compact('mailconnect'));
+  $mailExist = $reqMail->fetch();
+  if (!$mailExist) {
+    return "se mail est introuvable";
+  }
+}
+$erreur = handlePostRequest($pdo);
+
+?>
+
+
+
+
+
+
+
+
+
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 
 <head>
-  <title>TUTO PHP - Connexion</title>
+  <title>connection</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
-  <div class="max-w-md w-full bg-white rounded-lg shadow-lg p-6">
-    <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Connexion</h2>
+<body class="bg-green-100 pt-[100px] font-family-Poppins">
+  <div align="center">
+    <h2 class="text-4xl font-bold text-green-900 text-center mb-6">Connexion</h2>
+    <br /><br />
+    <form method="POST" action="" class="bg-white p-6 rounded shadow max-w-lg mx-auto">
+      <?php
+      if (isset($erreur)) {
+        echo '<p class="bg-red-500 w-full border border-green-300 p-2 rounded focus:outline-none focus:border-green-500 text-white font-bold">' . $erreur . '</p>';
+      }
 
-    <form method="POST" action="" class="space-y-6">
-      <div>
-        <label for="mailconnect" class="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
-        <input
-          type="email"
-          name="mailconnect"
-          id="mailconnect"
-          placeholder="Votre email"
-          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-      </div>
+      ?>
 
-      <div>
-        <label for="mdpconnect" class="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label>
-        <input
-          type="password"
-          name="mdpconnect"
-          id="mdpconnect"
-          placeholder="Votre mot de passe"
-          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-      </div>
 
-      <div class="flex justify-center">
-        <input
-          type="submit"
-          value="Se connecter !"
-          class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors duration-200 cursor-pointer" />
-      </div>
+
+      <label for="mailconnect" class="">Mail :</label>
+
+      <!-- E-mail : <input type="email" name="mailconnect" placeholder="Mail" /> <br><br> -->
+      <input type="mail" placeholder="mail" id="mailconnect" name="mailconnect" value="<?= $mailconnect ?? '' ?>" class="w-full border border-green-300 p-2 rounded focus:outline-none focus:border-green-500" />
+
+      <label for="mdpconnect" class="">Mot de passe :</label>
+
+      <input type="password" placeholder="mot de passe" id="mdpconnect" name="mdpconnect" value="<?= $mdpconnect ?? '' ?>" class="w-full border border-green-300 p-2 rounded focus:outline-none focus:border-green-500" />
+      <!-- PassWord : <input type="password" name="mdpconnect" placeholder="Mot de passe" /> -->
+      <br /><br />
+      <input type="submit" value="Se connecter !" class="w-full border border-green-300 p-2 rounded focus:outline-none focus:border-green-500 bg-green-100 cursor-pointer" />
     </form>
 
-    <?php if (isset($erreur)): ?>
-      <div class="mt-4 p-3 bg-red-100 text-red-700 rounded-md text-center">
-        <?php echo $erreur; ?>
-      </div>
-    <?php endif; ?>
   </div>
 </body>
 
