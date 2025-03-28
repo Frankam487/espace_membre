@@ -3,7 +3,7 @@ session_start();
 require_once "db.php";
 
 // Vérifier si l'ID est présent et valide
-if (!isset($_GET['id']) || !ctype_digit($_GET['id'])) {
+if (!isset($_GET['id'])) {
   die("ID invalide.");
 }
 
